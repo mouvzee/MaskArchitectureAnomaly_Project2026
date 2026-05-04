@@ -111,7 +111,7 @@ class MaskClassificationSemantic(LightningModule):
             print(type(logits), logits[0].shape)
             # add a remapping " if"to remap the classes if the flag is TRUE 
             if self.remap_coco_to_cityscapes:
-                from eomt.class_mapping import remap_coco_to_cityscapes
+                from class_mapping import remap_coco_to_cityscapes
                 # logits is a list of (C, H, W) tensors, one per image
                 pred = [remap_coco_to_cityscapes(l.argmax(dim=0)) for l in logits]
                 self.update_metrics_semantic(pred, targets, i)
