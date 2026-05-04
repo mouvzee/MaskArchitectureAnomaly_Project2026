@@ -65,12 +65,14 @@ class MaskClassificationSemantic(LightningModule):
 
         self.save_hyperparameters(ignore=["_class_path"])
 
+        # added
+        self.remap_coco_to_cityscapes = remap_coco_to_cityscapes
+
         self.ignore_idx = ignore_idx
         self.mask_thresh = mask_thresh
         self.overlap_thresh = overlap_thresh
         self.stuff_classes = range(num_classes)
-        # added
-        self.remap_coco_to_cityscapes = remap_coco_to_cityscapes
+
 
         self.criterion = MaskClassificationLoss(
             num_points=num_points,
