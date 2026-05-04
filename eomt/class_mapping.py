@@ -32,7 +32,7 @@ COCO_TO_CITYSCAPES = {
 }
 
 # Lookup table: built ONCE at import time
-LOOKUP_TABLE = np.full(256, 255, dtype=np.uint8)
+LOOKUP_TABLE = torch.full((256,), 255, dtype=torch.long)
 for coco_id, city_id in COCO_TO_CITYSCAPES.items():
     LOOKUP_TABLE[coco_id] = city_id
 
@@ -43,9 +43,12 @@ def remap_coco_to_cityscapes(pred):
     Returns:
         torch.Tensor same shape with Cityscapes train_ids (255 = ignore)
     """
-    pred_np = pred.cpu().numpy().astype(np.uint8)
-    remapped = LOOKUP_TABLE[pred_np]
-    return torch.from_numpy(remapped).to(pred.device)
+    global LOOKUP_TABLE
+    
+    if LOOKUP_TABLE.device != pred.device:
+        LOOKUP_TABLE = LOOKUP_TABLE.to(pred.device)
+
+    return LOOKUP_TABLE[pred.long()]
 
 # Common class info (14 classes that have a mapping)
 COMMON_TRAIN_IDS = sorted(set(COCO_TO_CITYSCAPES.values()))
