@@ -41,8 +41,6 @@ class MaskClassificationSemantic(LightningModule):
         ckpt_path: Optional[str] = None,
         delta_weights: bool = False,
         load_ckpt_class_head: bool = True,
-        # added
-        remap_coco_to_cityscapes: bool = False,
     ):
         super().__init__(
             network=network,
@@ -65,8 +63,6 @@ class MaskClassificationSemantic(LightningModule):
 
         self.save_hyperparameters(ignore=["_class_path"])
 
-        # added
-        self.remap_coco_to_cityscapes = remap_coco_to_cityscapes
 
         self.ignore_idx = ignore_idx
         self.mask_thresh = mask_thresh
@@ -107,18 +103,9 @@ class MaskClassificationSemantic(LightningModule):
             mask_logits = F.interpolate(mask_logits, self.img_size, mode="bilinear")
             crop_logits = self.to_per_pixel_logits_semantic(mask_logits, class_logits)
             logits = self.revert_window_logits_semantic(crop_logits, origins, img_sizes)
-            #DEBUG
-            print(type(logits), logits[0].shape)
-            # add a remapping " if"to remap the classes if the flag is TRUE 
-            if self.remap_coco_to_cityscapes:
-                from class_mapping import remap_coco_to_cityscapes
-                # logits is a list of (C, H, W) tensors, one per image
-                pred = [remap_coco_to_cityscapes(l.argmax(dim=0)) for l in logits]
-                self.update_metrics_semantic(pred, targets, i)
-            else:
-                #this is where the prediction meets the ground truth
-                #logits are in the COCO space, targets in cityscapes space
-                self.update_metrics_semantic(logits, targets, i)
+        
+            
+            self.update_metrics_semantic(logits, targets, i)
 
             if batch_idx == 0:
                 self.plot_semantic(
