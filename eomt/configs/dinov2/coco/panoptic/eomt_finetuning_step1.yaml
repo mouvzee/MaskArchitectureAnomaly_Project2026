@@ -1,0 +1,55 @@
+trainer:
+  default_root_dir: /content/ckpts/step1
+  devices: 1
+  precision: 16-mixed
+  max_epochs: 10
+  enable_checkpointing: true
+  accumulate_grad_batches: 4
+  logger:
+    class_path: lightning.pytorch.loggers.WandbLogger
+    init_args:
+      project: eomt
+      name: finetune_step1
+      resume: allow
+  callbacks:
+    - class_path: lightning.pytorch.callbacks.ModelCheckpoint
+      init_args:
+        dirpath: /content/ckpts/step1
+        filename: step1_best
+        save_top_k: 1
+        monitor: metrics/val_iou_all
+        mode: max
+        auto_insert_metric_name: false
+    - class_path: lightning.pytorch.callbacks.ModelCheckpoint
+      init_args:
+        dirpath: /content/ckpts/step1
+        filename: step1_last
+        save_top_k: 1
+        monitor: step
+        mode: max
+        auto_insert_metric_name: false
+    - class_path: callbacks.freeze.FreezeAllExceptClassHead
+
+model:
+  class_path: training.mask_classification_semantic.MaskClassificationSemantic
+  init_args:
+    num_classes: 19
+    attn_mask_annealing_enabled: true
+    attn_mask_annealing_start_steps: [3317, 8292, 13268]
+    attn_mask_annealing_end_steps: [6634, 11609, 16585]
+    network:
+      class_path: models.eomt.EoMT
+      init_args:
+        num_classes: 19
+        num_q: 200
+        num_blocks: 3
+        encoder:
+          class_path: models.vit.ViT
+          init_args:
+            backbone_name: vit_base_patch14_reg4_dinov2
+
+data:
+  class_path: datasets.cityscapes_semantic.CityscapesSemantic
+  init_args:
+    img_size: [640, 640]
+    num_workers: 4

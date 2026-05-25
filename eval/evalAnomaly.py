@@ -151,7 +151,7 @@ def main():
             continue              
         else:
              ood_gts_list.append(ood_gts)
-             #----------------------------------changied------------------------
+             #----------------------------------changed------------------------
              #anomaly_score_list.append(anomaly_result)
              max_logit_list.append(max_logit_result)
              msp_list.append(msp_result)
