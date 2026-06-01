@@ -34,6 +34,27 @@ This code can be used to produce anomaly segmentation results on various anomaly
 python evalAnomaly.py --input '/home/amarinai/ViT-Adapter/segmentation/unk-dataset/RoadAnomaly21/images/*.png'
 ```
 
+## evalAnomalyEOMT.py — EoMT Anomaly Evaluation
+
+Before running the evaluation, load the model and checkpoint 
+using the utilities in the `eomt/` folder. 
+An example of how to do this is provided in the notebook 
+`eval/evalAnomalyEOMT.ipynb`.
+
+Once the model is loaded, call the evaluation function directly:
+
+```python
+evaluate_anomaly_eomt(
+    model=model,
+    images_dir='/path/to/dataset/images',
+    gt_dir='/path/to/dataset/labels_masks',
+    device='cuda:0'
+)
+```
+
+Supported datasets: RoadAnomaly21, RoadObsticle21, 
+Fishyscapes L&F, Fishyscapes Static, RoadAnomaly.
+
 # Code on Citiscapes (probably not needed)
 
 This code can be used to produce segmentation of the Cityscapes images in color for visualization purposes. By default it saves images in eval/save_color/ folder. You can also visualize results in visdom with --visualize flag.

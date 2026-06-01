@@ -15,6 +15,9 @@ Usage:
         --data    /path/to/coco_data \
         --ckpt    checkpoints/eomt_coco.bin
 """
+import sys
+import os
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import argparse
 from evaluation import load_config, load_model_and_data, setup_environment, evaluate
 
