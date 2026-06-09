@@ -9,7 +9,7 @@ cd eomt
 
 python evaluation/run_eval.py \
     --config  configs/dinov2/cityscapes/semantic/eomt_base_640.yaml \
-    --data    /path/to/cityscapes \
+    --data    /path/to/cityscapes/data \
     --ckpt    /path/to/eomt_cityscapes.pth \
     --city-config  configs/dinov2/cityscapes/semantic/eomt_base_640.yaml \
     --city-ckpt    /path/to/eomt_cityscapes.pth
@@ -25,6 +25,7 @@ python evaluation/run_eval.py \
     --ckpt    /path/to/eomt_coco.pth \
     --city-config  configs/dinov2/cityscapes/semantic/eomt_base_640.yaml \
     --city-ckpt    /path/to/eomt_cityscapes.pth \
+    --city-data    /path/to/cityscapes/data \
     --coco-model
 ```
 
