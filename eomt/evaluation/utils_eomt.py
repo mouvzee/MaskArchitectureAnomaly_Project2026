@@ -123,6 +123,11 @@ def evaluate(model, dataloader, data, DEVICE, is_coco_model: bool, city_model):
     ).to(DEVICE)
 
     model.eval()
+
+    if is_coco_model:
+      mapped_count = sum(1 for v in COCO_TO_CITYSCAPES.values() if v != IGNORE_INDEX)
+      print(f"COCO classes mapped on Cityscapes: {mapped_count} / 133")
+      
     for img, target in tqdm(dataloader):
         img    = img[0]
         target = target[0]
@@ -145,8 +150,6 @@ def evaluate(model, dataloader, data, DEVICE, is_coco_model: bool, city_model):
         preds = logits_list[0].argmax(dim=0).cpu()
 
         if is_coco_model:
-            mapped_count = sum(1 for v in COCO_TO_CITYSCAPES.values() if v != IGNORE_INDEX)
-            print(f"COCO classes mapped on Cityscapes: {mapped_count} / 133")
             preds = torch.from_numpy(remap_coco_to_cityscapes(preds.numpy())).long()
         
 
