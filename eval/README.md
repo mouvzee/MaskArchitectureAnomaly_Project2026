@@ -39,7 +39,7 @@ python evalAnomaly.py --input '/home/amarinai/ViT-Adapter/segmentation/unk-datas
 Before running the evaluation, load the model and checkpoint 
 using the utilities in the `eomt/` folder. 
 An example of how to do this is provided in the notebook 
-`eval/evalAnomalyEOMT.ipynb`.
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1gCym8FGu8kwMr7LWshd8U7tGtovaz3JK?usp=sharing).
 
 Once the model is loaded, call the evaluation function directly:
 
