@@ -29,6 +29,7 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--ckpt",        required=True, help="Checkpoint of the model to evaluate")
     p.add_argument("--city-config", required=True, help="YAML config of the Cityscapes reference model")
     p.add_argument("--city-ckpt",   required=True, help="Checkpoint of the Cityscapes reference model")
+    p.add_argument("--city-data",   default=None, help="Path to Cityscapes data (if different from --data)")
     p.add_argument("--device",      type=int, default=0, help="CUDA device index (default: 0)")
     p.add_argument("--seed",        type=int, default=0, help="Random seed (default: 0)")
     p.add_argument("--coco-model",  action="store_true", help="Enable COCO→Cityscapes remapping")
@@ -43,13 +44,14 @@ def main() -> None:
     model, data = load_model_and_data(config, args.data, args.ckpt, args.device)
 
     city_config = load_config(args.city_config)
-    city_model, _ = load_model_and_data(city_config, args.data, args.city_ckpt, args.device)
+    city_data_path = args.city_data if args.city_data else args.data
+    city_model, city_data = load_model_and_data(city_config, city_data_path, args.city_ckpt, args.device)
 
     miou = evaluate(
         model=model,
-        dataloader=data.val_dataloader(),
+        dataloader=city_data.val_dataloader(),
         data=data,
-        device=args.device,
+        DEVICE=args.device,
         is_coco_model=args.coco_model,
         city_model=city_model,
     )

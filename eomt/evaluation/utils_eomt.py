@@ -97,8 +97,6 @@ def remap_coco_to_cityscapes(pred_array: np.ndarray) -> np.ndarray:
     out = np.full_like(pred_array, fill_value=IGNORE_INDEX, dtype=np.int64)
     for coco_id, city_id in COCO_TO_CITYSCAPES.items():
         out[pred_array == coco_id] = city_id
-    print(f"COCO classes mapped on Cityscapes: "
-      f"{sum(1 for v in COCO_TO_CITYSCAPES.values() if v != IGNORE_INDEX)} / 133")
     return out
 
 # EVALUATE THE MODELS
@@ -120,7 +118,7 @@ def evaluate(model, dataloader, data, DEVICE, is_coco_model: bool, city_model):
     metric = JaccardIndex(
         task="multiclass",
         num_classes=19,
-        IGNORE_INDEX=255,
+        ignore_index=255,
         average="macro",
     ).to(DEVICE)
 
@@ -147,7 +145,10 @@ def evaluate(model, dataloader, data, DEVICE, is_coco_model: bool, city_model):
         preds = logits_list[0].argmax(dim=0).cpu()
 
         if is_coco_model:
+            mapped_count = sum(1 for v in COCO_TO_CITYSCAPES.values() if v != IGNORE_INDEX)
+            print(f"COCO classes mapped on Cityscapes: {mapped_count} / 133")
             preds = torch.from_numpy(remap_coco_to_cityscapes(preds.numpy())).long()
+        
 
         gt = city_model.to_per_pixel_targets_semantic([target], 255)[0]
 
@@ -163,9 +164,3 @@ def evaluate(model, dataloader, data, DEVICE, is_coco_model: bool, city_model):
     miou = metric.compute()
     print(f"mIoU: {miou * 100:.1f}%")
     return miou.item()
-
-
-
-
-
-
